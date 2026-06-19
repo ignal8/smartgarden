@@ -1,6 +1,6 @@
 # 🌱 Toi Santuy — Smart Garden IoT Monitor
 
-Sistem monitoring & kontrol IoT untuk kebun/greenhouse menggunakan ESP32, dengan dashboard realtime ala Grafana.
+Sistem monitoring & kontrol IoT untuk kebun/greenhouse menggunakan ESP32, dengan dashboard realtime ala Grafana — **bisa dibuka langsung dari browser HP atau laptop manapun**, tanpa perlu Claude.
 
 ---
 
@@ -8,10 +8,23 @@ Sistem monitoring & kontrol IoT untuk kebun/greenhouse menggunakan ESP32, dengan
 
 | File | Fungsi |
 |---|---|
-| `server.js` | Backend API (Node.js + Express) — jembatan ESP32 ↔ Dashboard |
+| `server.js` | Backend API + menyajikan dashboard (Node.js + Express) |
 | `package.json` | Daftar dependency backend |
+| `public/index.html` | **Dashboard web** (HTML/JS murni, mobile-friendly) |
 | `esp32_sensor.ino` | Firmware ESP32 — baca sensor & kontrol relay |
-| `iot_dashboard.jsx` | Dashboard web realtime (React) |
+| `iot_dashboard.jsx` | (Opsional) versi dashboard React untuk Claude artifact |
+
+---
+
+## 🌐 Cara Buka Dashboard
+
+Setelah server dideploy ke Railway, **buka URL Railway-nya langsung** di browser HP/laptop, contoh:
+
+```
+https://smartgarden-production-2a96.up.railway.app
+```
+
+Dashboard akan tampil dan otomatis polling data sensor dari server yang sama (tidak perlu setting "Koneksi Server" lagi). Semua tombol, toggle, jadwal, dan setting tersimpan otomatis di browser (localStorage).
 
 ---
 
@@ -39,19 +52,20 @@ Sistem monitoring & kontrol IoT untuk kebun/greenhouse menggunakan ESP32, dengan
 
 ## 🚀 Cara Deploy
 
-### 1. Backend (Railway)
+### 1. Backend + Dashboard (Railway)
 ```bash
-git init
 git add .
-git commit -m "deploy toi santuy server"
-git branch -M main
-git remote add origin https://github.com/USERNAME/smartgarden.git
-git push -u origin main
+git commit -m "deploy toi santuy"
+git push
 ```
-Lalu di [railway.app](https://railway.app):
-- New Project → Deploy from GitHub repo → pilih repo `smartgarden`
-- Set **Root Directory** = `/` (jika file langsung di root) atau sesuaikan
-- Setelah deploy, copy domain (contoh: `https://smartgarden-production-xxxx.up.railway.app`)
+Railway otomatis deploy ulang. Pastikan struktur folder di repo seperti ini:
+```
+smartgarden/
+├── server.js
+├── package.json
+└── public/
+    └── index.html
+```
 
 ### 2. Firmware ESP32
 Edit bagian konfigurasi di `esp32_sensor.ino`:
@@ -62,9 +76,8 @@ const char* SERVER_URL    = "https://smartgarden-production-xxxx.up.railway.app"
 ```
 Upload ke ESP32 via Arduino IDE.
 
-### 3. Dashboard
-Buka `iot_dashboard.jsx` di Claude / React project.
-Di tab **🔌 Server**, masukkan URL Railway yang sama, klik **HUBUNGKAN**.
+### 3. Buka Dashboard
+Buka URL Railway kamu langsung di browser HP/laptop — selesai!
 
 ---
 
@@ -72,6 +85,8 @@ Di tab **🔌 Server**, masukkan URL Railway yang sama, klik **HUBUNGKAN**.
 
 | Method | Endpoint | Fungsi |
 |---|---|---|
+| GET | `/` | Dashboard web (public/index.html) |
+| GET | `/api/status` | Health check server |
 | POST | `/api/sensor` | ESP32 kirim data sensor |
 | GET | `/api/sensor/latest` | Dashboard ambil data terbaru |
 | GET | `/api/sensor/history?limit=40` | Dashboard ambil histori |
@@ -89,6 +104,7 @@ Di tab **🔌 Server**, masukkan URL Railway yang sama, klik **HUBUNGKAN**.
 - 💡 Kontrol Lampu (manual + jadwal otomatis, sama seperti pompa)
 - ⚙️ Setting batas Warning/Danger per sensor
 - 📱 Notifikasi WhatsApp otomatis via CallMeBot saat sensor melewati batas bahaya, atau saat pompa/lampu nyala-mati sesuai jadwal
+- 📲 Mobile-friendly — bisa dibuka di browser HP manapun, semua tombol berfungsi normal
 
 ---
 
