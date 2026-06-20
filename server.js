@@ -19,8 +19,16 @@ const app     = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve dashboard HTML (folder "public/index.html") di "/"
-app.use(express.static(path.join(__dirname, "public")));
+// Serve dashboard HTML
+const publicDir = path.join(__dirname, "public");
+console.log(`[STATIC] Serving from: ${publicDir}`);
+console.log(`[STATIC] public/ exists: ${fs.existsSync(publicDir)}`);
+if (fs.existsSync(publicDir)) {
+  app.use(express.static(publicDir));
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(publicDir, "index.html"));
+  });
+}
 
 // ─── PERSISTENSI (file data.json) ────────────────────────────────────────────
 const DATA_FILE = path.join(__dirname, "data.json");
