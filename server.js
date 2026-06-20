@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// TOI SANTUY — Smart Garden IoT Backend (Node.js + Express)
+// TOI SANTUY — TOI SANTUY IoT Backend v2 (Node.js + Express)
 // Deploy ke Railway / Render (gratis)
 //
 // Fitur:
